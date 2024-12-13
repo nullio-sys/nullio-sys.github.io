@@ -1,172 +1,378 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NULL IO</title>
+    <script src="crypto-js.min.js"></script>
     <style>
         body {
-            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #0a0a2a;
+            color: #00fff2;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 50%, rgba(147, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(0, 255, 242, 0.1) 0%, transparent 50%);
+            animation: nebulaPulse 15s infinite alternate;
+            z-index: -2;
+        }
+
+        @keyframes nebulaPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .container {
             max-width: 800px;
             margin: 0 auto;
+            background: rgba(10, 10, 42, 0.8);
             padding: 20px;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
+            border: 1px solid #00fff2;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 242, 0.2),
+                inset 0 0 30px rgba(0, 255, 242, 0.1);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
         }
-        .post {
-            background-color: #2d2d2d;
+
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                rgba(0, 255, 242, 0.03) 0%,
+                rgba(0, 255, 242, 0) 20%,
+                rgba(0, 255, 242, 0) 80%,
+                rgba(0, 255, 242, 0.03) 100%);
+            animation: subtle-scan 4s ease-in-out infinite;
+        }
+
+        @keyframes subtle-scan {
+            0%, 100% { transform: translateY(-100%); }
+            50% { transform: translateY(100%); }
+        }
+
+        .important-message {
+            margin-bottom: 30px;
             padding: 20px;
+            border: 2px solid #ff0066;
+            background: rgba(255, 0, 102, 0.1);
+            position: relative;
+            animation: message-glow 4s infinite alternate;
+        }
+
+        @keyframes message-glow {
+            from { box-shadow: 0 0 5px rgba(255, 0, 102, 0.5); }
+            to { box-shadow: 0 0 15px rgba(255, 0, 102, 0.5); }
+        }
+
+        .message-title {
+            color: #ff0066;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .message-content {
+            color: #fff;
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            position: relative;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: #00fff2;
+            box-shadow: 0 0 10px #00fff2;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00fff2, 0 0 10px #00fff2; }
+            to { text-shadow: 0 0 10px #00fff2, 0 0 20px #00fff2, 0 0 30px #00fff2; }
+        }
+
+        .post {
+            margin-bottom: 30px;
+            padding: 20px 20px 20px 40px;
+            border: 1px solid #00fff2;
+            position: relative;
+            transition: all 0.3s;
+            background: rgba(0, 255, 242, 0.05);
+        }
+
+        .post:hover {
+            transform: translateX(5px);
+            box-shadow: -5px 0 15px rgba(0, 255, 242, 0.2);
+        }
+
+        .post::before {
+            content: ">";
+            position: absolute;
+            left: 15px;
+            color: #00fff2;
+            animation: blink 1s infinite;
+        }
+
+        .post-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 242, 0.3);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .decrypt-section {
             margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            /* Add these properties for text handling */
-            word-wrap: break-word;
-            overflow-wrap: break-word;
+            padding: 20px;
+            border: 1px solid #00fff2;
+            background: rgba(0, 255, 242, 0.05);
+            position: relative;
+        }
+
+        input {
+            background: rgba(10, 10, 42, 0.9);
+            border: 1px solid #00fff2;
+            color: #00fff2;
+            padding: 15px;
+            margin: 10px 0;
             width: 100%;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
             box-sizing: border-box;
         }
-        .post-title {
-            color: #ffffff;
-            margin-top: 0;
-            /* Add text wrapping for long titles */
-            word-wrap: break-word;
-            overflow-wrap: break-word;
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.3);
         }
-        .post-date {
-            color: #b0b0b0;
-            font-size: 0.9em;
-            margin-bottom: 10px;
+
+        button {
+            background: transparent;
+            color: #00fff2;
+            border: 1px solid #00fff2;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .post-content {
-            color: #e0e0e0;
-            /* Add these properties for content text handling */
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            max-width: 100%;
+
+        button:hover {
+            background: rgba(0, 255, 242, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.3);
         }
-        /* Add proper handling for any images that might be in posts */
-        .post-content img {
-            max-width: 100%;
-            height: auto;
+
+        #status {
+            margin-top: 10px;
+            color: #00fff2;
+            min-height: 20px;
         }
-        /* Add proper handling for any code blocks or pre elements */
-        .post-content pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-x: auto;
-            max-width: 100%;
-            padding: 10px;
-            background-color: #1a1a1a;
-            border-radius: 4px;
+
+        .decrypted {
+            animation: decrypt-glow 2s ease-out;
         }
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #ffffff;
-            /* Add text wrapping for long headers */
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-        .important-message {
-            background-color: #3d1d1d;
-            border-left: 4px solid #ff4444;
-            padding: 15px;
-            margin-bottom: 30px;
-            border-radius: 0 8px 8px 0;
-            /* Add text wrapping for message content */
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-        .nav-button {
-            display: inline-block;
-            background-color: #4a4a4a;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            margin-bottom: 20px;
-        }
-        .nav-button:hover {
-            background-color: #666666;
-        }
-        .button-container {
-            text-align: center;
-            margin: 20px 0;
+
+        @keyframes decrypt-glow {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 242, 0.5); }
+            100% { box-shadow: none; }
         }
     </style>
 </head>
 <body>
-    <header>
+    <div id="stars-container" class="stars"></div>
+    <div class="container">
         <h1>NULL IO</h1>
-    </header>
+        
+        <div class="important-message">
+            <div class="message-title">> IMPORTANT MESSAGE</div>
+            <div class="message-content">
+                Welcome to null io! Here are some key points to note:
 
-    <div class="important-message">
-        <h3>⚠️ Important Information</h3>
-        <p>Welcome to null io! Here are some key points to note:</p>
-        <ul>
-            <li>Updates happen when I feel like it </li>
-            <li>Everything here is encrypted, but don't worry, you'll be able to decrypt it all when the time comes.</li>
-            <li>All will be revealed when the decryption password drops</li>
-			<li>When will the decryption password be revealed? Sometime this year, but you'll have to wait for the grand reveal.</li>
-        </ul>
-		<p>Also, if you're interested in my site, I suggest you write down the mirrors of this site for yourself just in case</p>
-		<ul>
-            <li>https://null-io.pages.dev/</li>
-            <li>https://nullio-sys.github.io/</li>
-            <li>https://null-io.vercel.app/</li>
-			<li>https://null-io.neocities.org/</li>
-        </ul>
+                Updates happen when I feel like it
+                Everything here is encrypted, but don't worry, you'll be able to decrypt it all when the time comes.
+                All will be revealed when the decryption key drops
+                When will the decryption key be revealed? Sometime this year, but you'll have to wait for the grand reveal.
+               
+                Also, if you're interested in my site, I suggest you write down the mirrors of this site for yourself just in case:
+                - null-io.pages.dev
+                - nullio-sys.github.io
+				- null-io.vercel.app
+				- null-io.neocities.org
+                
+		        Decryption key: not yet revealed
+            </div>
+        </div>
+        
+        <div class="decrypt-section">
+            <input type="password" id="password" placeholder="Enter decryption key...">
+            <button onclick="decryptAllPosts()">DECRYPT ALL POSTS</button>
+            <div id="status"></div>
+        </div>
+
+        <div id="blog-posts">
+            <!-- Posts will be loaded here -->
+        </div>
     </div>
-
-    <div class="button-container">
-        <a href="aes256.html" class="nav-button">Decryption tool →</a>
-    </div>
-
-    <main id="blog-posts">
-        <!-- Posts will be inserted here -->
-    </main>
 
     <script>
-        // Function to fetch and parse blog posts
-        async function loadBlogPosts() {
-            try {
-                const response = await fetch('posts.txt');
-                const text = await response.text();
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            const numStars = 200;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
                 
-                // Split posts by a delimiter (----)
-                const posts = text.split('----').filter(post => post.trim() !== '');
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 2;
+                const duration = 2 + Math.random() * 3;
                 
-                const blogContainer = document.getElementById('blog-posts');
-                
-                posts.forEach(post => {
-                    const [title, date, ...contentLines] = post.trim().split('\n');
-                    const content = contentLines.join('\n');
-                    
-                    const postElement = document.createElement('article');
-                    postElement.className = 'post';
-                    postElement.innerHTML = `
-                        <h2 class="post-title">${title}</h2>
-                        <div class="post-date">${date}</div>
-                        <div class="post-content">${content}</div>
-                    `;
-                    
-                    blogContainer.appendChild(postElement);
-                });
-            } catch (error) {
-                console.error('Error loading blog posts:', error);
-                document.getElementById('blog-posts').innerHTML = `
-                    <p>Error loading blog posts. Please make sure posts.txt exists and is accessible.</p>
+                star.style.cssText = `
+                    left: ${x}%;
+                    top: ${y}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    --duration: ${duration}s;
                 `;
+                
+                container.appendChild(star);
             }
         }
 
-        // Load posts when page loads
-        window.addEventListener('load', loadBlogPosts);
+        function decryptText(encryptedText, password) {
+            try {
+                const decrypted = CryptoJS.AES.decrypt(encryptedText, password).toString(CryptoJS.enc.Utf8);
+                return decrypted;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function loadPosts() {
+            fetch('posts.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const posts = JSON.parse(data);
+                    const postsContainer = document.getElementById('blog-posts');
+                    
+                    posts.forEach(post => {
+                        const postDiv = document.createElement('div');
+                        postDiv.className = 'post';
+                        postDiv.innerHTML = `
+                            <div class="post-title">[ENCRYPTED TITLE]</div>
+                            [ENCRYPTED CONTENT]
+                        `;
+                        postDiv.setAttribute('data-encrypted-title', post.title);
+                        postDiv.setAttribute('data-encrypted-content', post.content);
+                        postsContainer.appendChild(postDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading posts:', error);
+                    document.getElementById('blog-posts').innerHTML = 'Error loading posts. Please check posts.txt file.';
+                });
+        }
+
+        function decryptAllPosts() {
+            const password = document.getElementById('password').value;
+            const posts = document.querySelectorAll('.post');
+            const status = document.getElementById('status');
+            
+            let success = true;
+            
+            posts.forEach(post => {
+                const encryptedTitle = post.getAttribute('data-encrypted-title');
+                const encryptedContent = post.getAttribute('data-encrypted-content');
+                
+                const decryptedTitle = decryptText(encryptedTitle, password);
+                const decryptedContent = decryptText(encryptedContent, password);
+                
+                if (decryptedTitle && decryptedContent) {
+                    post.innerHTML = `
+                        <div class="post-title">${decryptedTitle}</div>
+                        ${decryptedContent}
+                    `;
+                    post.classList.add('decrypted');
+                } else {
+                    success = false;
+                }
+            });
+            
+            status.innerHTML = success ? 
+                '> Decryption successful. Access granted.' : 
+                '> Error: Invalid decryption key. Access denied.';
+            
+            if (success) {
+                status.style.animation = 'glow 2s ease-in-out';
+            }
+        }
+
+        // Initialize stars and load posts when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            loadPosts();
+        });
     </script>
 </body>
 </html>
